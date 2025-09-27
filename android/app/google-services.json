@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "908872962434",
+    "project_id": "planetsbrand-1f283",
+    "storage_bucket": "planetsbrand-1f283.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908872962434:android:3228df2486b62329613f9b",
+        "android_client_info": {
+          "package_name": "com.example.planetbrand"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "908872962434-ffeebg0tklccl56rcknc1pbhonra4hvk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB56XMV7VvlUxTUbjKongE2NE0gBkFc-Uc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "908872962434-ffeebg0tklccl56rcknc1pbhonra4hvk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "908872962434-26ra15h9nqmpa3mgiqtbvdb4fiuq0o89.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.planetbrand"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908872962434:android:c39181e4a7a16220613f9b",
+        "android_client_info": {
+          "package_name": "com.planets.planetsbrand"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "908872962434-kbo9m58aqat57dlmpj0snq1gjmgm859f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.planets.planetsbrand",
+            "certificate_hash": "231fa98c3352ae0fb7e95bb18769c066945bd9a6"
+          }
+        },
+        {
+          "client_id": "908872962434-ffeebg0tklccl56rcknc1pbhonra4hvk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB56XMV7VvlUxTUbjKongE2NE0gBkFc-Uc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "908872962434-ffeebg0tklccl56rcknc1pbhonra4hvk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "908872962434-26ra15h9nqmpa3mgiqtbvdb4fiuq0o89.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.planetbrand"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

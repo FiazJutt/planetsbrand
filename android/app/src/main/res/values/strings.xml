@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">plantsid</string>
+    <string name="facebook_app_id">649826399926849</string>
+    <string name="fb_login_protocol_scheme">2062a61cb9d557d570c99ab90c3d7f5e</string>
+    <string name="facebook_client_token">3dc7e0694edce108b33024dd741ec722</string>
+</resources>
