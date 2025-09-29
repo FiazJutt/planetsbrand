@@ -45,11 +45,30 @@ class ShopPage extends StatelessWidget {
           },
           icon: HeroIcon(HeroIcons.arrowLeft, size: 20),
         ),
+        actions: [
+          // Search icon button
+          Obx(() => IconButton(
+            icon: HeroIcon(
+              shopController.isSearchVisible.value
+                  ? HeroIcons.xMark
+                  : HeroIcons.magnifyingGlass,
+              color: AppColors.primaryColor,
+            ),
+            onPressed: () {
+              shopController.toggleSearch();
+              if (!shopController.isSearchVisible.value) {
+                // Clear search when closing
+                shopController.searchController.clear();
+                shopController.setSearchQuery('');
+              }
+            },
+          )),
+        ],
       ),
       body: Obx(() {
         return shopController.loader.value
             ? CommonShimmerEffect()
-            : shopController.shops.isEmpty
+            : shopController.filteredShops.isEmpty
             ? const Center(child: Text("No Shops Found"))
             : RefreshIndicator(
               onRefresh: () async {
@@ -58,6 +77,87 @@ class ShopPage extends StatelessWidget {
               },
               child: Column(
                 children: [
+                  // Search Field with animation
+                  Obx(() => AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: shopController.isSearchVisible.value
+                        ? Container(
+                      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primaryColor.withOpacity(0.08),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: shopController.searchController,
+                        autofocus: true,
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Search shops...',
+                          hintStyle: GoogleFonts.montserrat(
+                            fontSize: 14,
+                            color: AppColors.hintColor,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: AppColors.primaryColor,
+                            size: 22,
+                          ),
+                          suffixIcon: shopController.searchQuery.value.isNotEmpty
+                              ? IconButton(
+                            icon: Icon(
+                              Icons.clear,
+                              color: AppColors.hintColor,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              shopController.searchController.clear();
+                              shopController.setSearchQuery('');
+                            },
+                          )
+                              : null,
+                          filled: true,
+                          fillColor: AppColors.scafoldBackgroundColor,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: AppColors.lightGrayColor,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: AppColors.primaryColor,
+                              width: 2,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                        onChanged: (value) {
+                          shopController.setSearchQuery(value);
+                        },
+                      ),
+                    )
+                        : const SizedBox.shrink(),
+                  )),
                   Expanded(
                     child: GridView.builder(
                       controller: scrollController,
@@ -69,9 +169,9 @@ class ShopPage extends StatelessWidget {
                             crossAxisSpacing: 10,
                             mainAxisExtent: 150,
                           ),
-                      itemCount: shopController.shops.length,
+                      itemCount: shopController.filteredShops.length,
                       itemBuilder: (context, index) {
-                        final shop = shopController.shops[index];
+                        final shop = shopController.filteredShops[index];
                         return GestureDetector(
                           onTap: () {
                             Get.to(

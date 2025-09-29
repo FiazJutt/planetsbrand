@@ -34,12 +34,32 @@ class BrandScreen extends StatelessWidget {
           },
           icon: HeroIcon(HeroIcons.arrowLeft, size: 20),
         ),
+
+        actions: [
+          // Search icon button
+          Obx(() => IconButton(
+            icon: HeroIcon(
+              brandController.isSearchVisible.value
+                  ? HeroIcons.xMark
+                  : HeroIcons.magnifyingGlass,
+              color: AppColors.primaryColor,
+            ),
+            onPressed: () {
+              brandController.toggleSearch();
+              if (!brandController.isSearchVisible.value) {
+                // Clear search when closing
+                brandController.searchController.clear();
+                brandController.setSearchQuery('');
+              }
+            },
+          )),
+        ],
       ),
       body: Obx(() {
         return brandController.loader.value
             ? CommonShimmerEffect()
-            : brandController.brandModel.value?.brands == null &&
-                brandController.brandModel.value!.brands!.isEmpty
+            : (brandController.filteredBrandModel.value?.brands == null &&
+                brandController.filteredBrandModel.value!.brands!.isEmpty)
             ? const Center(child: Text("No Brand Found"))
             : RefreshIndicator(
               onRefresh: () async {
@@ -47,6 +67,87 @@ class BrandScreen extends StatelessWidget {
               },
               child: Column(
                 children: [
+                  // Search Field with animation
+                  Obx(() => AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: brandController.isSearchVisible.value
+                        ? Container(
+                      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primaryColor.withOpacity(0.08),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: brandController.searchController,
+                        autofocus: true,
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Search brands...',
+                          hintStyle: GoogleFonts.montserrat(
+                            fontSize: 14,
+                            color: AppColors.hintColor,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: AppColors.primaryColor,
+                            size: 22,
+                          ),
+                          suffixIcon: brandController.searchQuery.value.isNotEmpty
+                              ? IconButton(
+                            icon: Icon(
+                              Icons.clear,
+                              color: AppColors.hintColor,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              brandController.searchController.clear();
+                              brandController.setSearchQuery('');
+                            },
+                          )
+                              : null,
+                          filled: true,
+                          fillColor: AppColors.scafoldBackgroundColor,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: AppColors.lightGrayColor,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: AppColors.primaryColor,
+                              width: 2,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                        onChanged: (value) {
+                          brandController.setSearchQuery(value);
+                        },
+                      ),
+                    )
+                        : const SizedBox.shrink(),
+                  )),
                   Expanded(
                     child: GridView.builder(
                       padding: const EdgeInsets.all(10),
@@ -58,10 +159,10 @@ class BrandScreen extends StatelessWidget {
                             mainAxisExtent: 150,
                           ),
                       itemCount:
-                          brandController.brandModel.value?.brands?.length ?? 0,
+                          brandController.filteredBrandModel.value?.brands?.length ?? 0,
                       itemBuilder: (context, index) {
                         final brand =
-                            brandController.brandModel.value?.brands?[index];
+                            brandController.filteredBrandModel.value?.brands?[index];
                         return GestureDetector(
                           onTap: () {
                             Get.to(

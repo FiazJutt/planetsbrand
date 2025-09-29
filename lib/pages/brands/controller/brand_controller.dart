@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:planetbrand/pages/brands/models/brand_model.dart';
 import 'package:planetbrand/pages/brands/models/brand_product_model.dart';
@@ -8,11 +9,17 @@ import 'package:planetbrand/utils/config.dart';
 class BrandController extends GetxController {
   RxBool loader = false.obs;
   Rx<BrandModel?> brandModel = Rx(null);
+  Rx<BrandModel?> filteredBrandModel = Rx(null);
 
   RxInt currentPage = 1.obs;
   RxInt lastPage = 1.obs;
   RxBool isFetchingMore = false.obs;
   RxList<Products> brandProduct = <Products>[].obs;
+
+  // Search state
+  var isSearchVisible = false.obs;
+  final TextEditingController searchController = TextEditingController();
+  RxString searchQuery = ''.obs;
 
   int? selectedBrandId;
 
@@ -22,6 +29,12 @@ class BrandController extends GetxController {
     fetchBrands(); // Load brand list
   }
 
+  @override
+  void onClose() {
+    searchController.dispose();
+    super.onClose();
+  }
+
   Future<void> fetchBrands() async {
     loader(true);
     try {
@@ -29,6 +42,8 @@ class BrandController extends GetxController {
       final responseData = jsonDecode(response.body);
       if (responseData['status_code'] == 200) {
         brandModel.value = BrandModel.fromJson(responseData);
+        // Initialize filtered brands with all brands
+        filteredBrandModel.value = BrandModel.fromJson(responseData);
       }
     } catch (e) {
       rethrow;
@@ -74,5 +89,42 @@ class BrandController extends GetxController {
       currentPage++;
       fetchBrandProduct(isLoadMore: true);
     }
+  }
+
+  /// Update search query and filter brands
+  void setSearchQuery(String query) {
+    searchQuery.value = query;
+    filterBrands(query);
+  }
+
+  /// Filter brands based on search query
+  void filterBrands(String query) {
+    if (brandModel.value == null) return;
+
+    if (query.isEmpty) {
+      // If query is empty, show all brands
+      filteredBrandModel.value = brandModel.value;
+    } else {
+      // Filter brands based on name or shop name
+      final filteredBrands =
+          brandModel.value!.brands!.where((brand) {
+            final name = (brand.name ?? '').toLowerCase();
+            final shopName = (brand.shopName ?? '').toLowerCase();
+            final searchTerm = query.toLowerCase();
+            return name.contains(searchTerm) || shopName.contains(searchTerm);
+          }).toList();
+
+      // Update filtered brand model
+      filteredBrandModel.value = BrandModel(
+        statusCode: brandModel.value!.statusCode,
+        status: brandModel.value!.status,
+        brands: filteredBrands,
+      );
+    }
+  }
+
+  // Add this method
+  void toggleSearch() {
+    isSearchVisible.value = !isSearchVisible.value;
   }
 }

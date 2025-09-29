@@ -9,6 +9,8 @@ import 'package:planetbrand/pages/brands/brand_screen.dart';
 import 'package:planetbrand/pages/brands/controller/brand_controller.dart';
 import 'package:planetbrand/pages/category/category_product_screen.dart';
 import 'package:planetbrand/pages/festivals/festival_screen.dart';
+import 'package:planetbrand/pages/grocery/grocery_UI.dart';
+import 'package:planetbrand/pages/grocery/grocery_main_screen.dart';
 import 'package:planetbrand/pages/home/category_screen.dart';
 import 'package:planetbrand/pages/home/controller/home_controller.dart';
 import 'package:planetbrand/pages/home/deal_of_day_screen.dart';
@@ -276,7 +278,9 @@ class HomePage extends StatelessWidget {
       children: [
         _linkTile("Brands", () => Get.to(() => BrandScreen())),
         _linkTile("Shops", () => Get.to(() => ShopPage())),
-        _linkTile("Festivals", () => Get.to(() => FestivalScreen())),
+        _linkTile("Groceries", () => Get.to(() => GroceryMainScreen())),
+        // _linkTile("Groceries", () => Get.to(() => GroceryShopScreen())),
+        // _linkTile("Festivals", () => Get.to(() => FestivalScreen())),
       ],
     );
   }
