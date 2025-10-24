@@ -26,7 +26,8 @@ class SearchShopScreen extends StatelessWidget {
       if (scrollController.position.pixels >=
               scrollController.position.maxScrollExtent - 100 &&
           !shopController.isFetchingMoreVendors.value &&
-          shopController.currentPage.value < shopController.lastPage.value) {
+          shopController.vendorCurrentPage.value <
+              shopController.vendorLastPage.value) {
         shopController.loadMoreVendors();
       }
     });
@@ -55,7 +56,7 @@ class SearchShopScreen extends StatelessWidget {
             ? CommonShimmerEffect()
             : RefreshIndicator(
               onRefresh: () async {
-                shopController.currentPage.value = 1;
+                shopController.vendorCurrentPage.value = 1;
                 await shopController.fetchVendors(loading: true);
               },
               child: Column(
@@ -72,13 +73,13 @@ class SearchShopScreen extends StatelessWidget {
                       labelText: "Search shops...",
                       suffixIcons: IconButton(
                         onPressed: () async {
-                          shopController.currentPage.value = 1;
+                          shopController.vendorCurrentPage.value = 1;
                           await shopController.fetchVendors(loading: false);
                         },
                         icon: HeroIcon(HeroIcons.magnifyingGlass),
                       ),
                       onChange: (value) async {
-                        shopController.currentPage.value = 1;
+                        shopController.vendorCurrentPage.value = 1;
                         await shopController.fetchVendors(loading: false);
                       },
                     ),
@@ -240,8 +241,8 @@ class SearchShopScreen extends StatelessWidget {
                             color: AppColors.primaryColor,
                           ),
                         )
-                        : shopController.currentPage.value >=
-                            shopController.lastPage.value
+                        : shopController.vendorCurrentPage.value >=
+                            shopController.vendorLastPage.value
                         ? const Padding(
                           padding: EdgeInsets.symmetric(vertical: 16),
                           child: Text("No more shops"),

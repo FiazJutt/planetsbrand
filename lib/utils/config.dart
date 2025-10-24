@@ -36,3 +36,6 @@ const userAddressesEndPoint = "user/addresses";
 const customerOrdersEndPoint = "customer_orders";
 const trackOrderEndPoint = "order_tracking";
 const brandProductEndPoint = "brandProducts";
+// const customerVerifyOtpEndPoint = "customer_verify_otp";
+// const customerResendOtpEndPoint = "customer_resend_otp";
+// const customerSendOtpSignUpEndPoint = "customer_send_otp_signup";

@@ -21,6 +21,15 @@ class ShopController extends GetxController {
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
 
+  // Distance filter state
+  RxInt selectedDistance = 0.obs;
+  RxList<Map<String, dynamic>> distanceOptions =
+      <Map<String, dynamic>>[
+        {'label': 'All', 'value': 0, 'isSelected': true},
+        {'label': '20 km', 'value': 20, 'isSelected': false},
+        {'label': '50 km', 'value': 50, 'isSelected': false},
+      ].obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -41,9 +50,13 @@ class ShopController extends GetxController {
     }
 
     try {
-      final response = await ApiHelper.getRequestWithToken(
-        '$shopsEndPoint?page=${currentPage.value}',
-      );
+      // Add distance parameter to the API call if a distance is selected
+      String apiUrl = '$shopsEndPoint?page=${currentPage.value}';
+      if (selectedDistance.value > 0) {
+        apiUrl += '&distance=${selectedDistance.value}';
+      }
+
+      final response = await ApiHelper.getRequestWithToken(apiUrl);
       final responseData = jsonDecode(response.body);
 
       if (responseData['status_code'] == 200) {
@@ -55,6 +68,7 @@ class ShopController extends GetxController {
           // Initialize filtered shops with all shops
           filteredShops.value = shopModel.data ?? [];
         }
+        // Update pagination info
         lastPage.value = shopModel.lastPage ?? 1;
       }
     } catch (e) {
@@ -117,5 +131,30 @@ class ShopController extends GetxController {
   // Toggle search visibility
   void toggleSearch() {
     isSearchVisible.value = !isSearchVisible.value;
+  }
+
+  // Refresh method for pull to refresh
+  Future<void> refreshShops() async {
+    currentPage.value = 1; // Reset to first page
+    await fetchShops();
+  }
+
+  // Add these methods for distance filter
+  /// Update selected distance
+  void updateDistanceFilter(int distance) {
+    selectedDistance.value = distance;
+    // Update selection status in distance options
+    for (var option in distanceOptions) {
+      option['isSelected'] = option['value'] == distance;
+    }
+    distanceOptions.refresh();
+
+    // Refresh data
+    refreshShops();
+  }
+
+  /// Reset distance filter
+  void resetDistanceFilter() {
+    updateDistanceFilter(0);
   }
 }

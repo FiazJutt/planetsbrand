@@ -21,6 +21,15 @@ class BrandController extends GetxController {
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
 
+  // Distance filter state
+  RxInt selectedDistance = 0.obs;
+  RxList<Map<String, dynamic>> distanceOptions =
+      <Map<String, dynamic>>[
+        {'label': 'All', 'value': 0, 'isSelected': true},
+        {'label': '20 km', 'value': 20, 'isSelected': false},
+        {'label': '50 km', 'value': 50, 'isSelected': false},
+      ].obs;
+
   int? selectedBrandId;
 
   @override
@@ -35,20 +44,46 @@ class BrandController extends GetxController {
     super.onClose();
   }
 
-  Future<void> fetchBrands() async {
-    loader(true);
+  Future<void> fetchBrands({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      isFetchingMore.value = true;
+    } else {
+      loader(true);
+    }
+
     try {
-      final response = await ApiHelper.getRequestWithToken(brandsEndPoint);
+      // Add distance parameter to the API call if a distance is selected
+      String apiUrl = '$brandsEndPoint?page=${currentPage.value}';
+      if (selectedDistance.value > 0) {
+        apiUrl += '&distance=${selectedDistance.value}';
+      }
+
+      final response = await ApiHelper.getRequestWithToken(apiUrl);
       final responseData = jsonDecode(response.body);
       if (responseData['status_code'] == 200) {
-        brandModel.value = BrandModel.fromJson(responseData);
-        // Initialize filtered brands with all brands
-        filteredBrandModel.value = BrandModel.fromJson(responseData);
+        final brandModelResponse = BrandModel.fromJson(responseData);
+        if (isLoadMore) {
+          // Add new data to existing list
+          brandModel.value?.brands?.addAll(brandModelResponse.brands ?? []);
+        } else {
+          // Replace existing data
+          brandModel.value = brandModelResponse;
+          // Initialize filtered brands with all brands
+          filteredBrandModel.value = BrandModel.fromJson(responseData);
+        }
+        // Update pagination info if available in response
+        if (responseData.containsKey('last_page')) {
+          lastPage.value = responseData['last_page'];
+        } else {
+          // If no pagination info in response, assume single page
+          lastPage.value = 1;
+        }
       }
     } catch (e) {
       rethrow;
     } finally {
       loader(false);
+      isFetchingMore.value = false;
     }
   }
 
@@ -87,7 +122,7 @@ class BrandController extends GetxController {
   void loadMore() {
     if (currentPage.value < lastPage.value && !isFetchingMore.value) {
       currentPage++;
-      fetchBrandProduct(isLoadMore: true);
+      fetchBrands(isLoadMore: true);
     }
   }
 
@@ -126,5 +161,30 @@ class BrandController extends GetxController {
   // Add this method
   void toggleSearch() {
     isSearchVisible.value = !isSearchVisible.value;
+  }
+
+  // Refresh method for pull to refresh
+  Future<void> refreshBrands() async {
+    currentPage.value = 1; // Reset to first page
+    await fetchBrands();
+  }
+
+  // Add these methods for distance filter
+  /// Update selected distance
+  void updateDistanceFilter(int distance) {
+    selectedDistance.value = distance;
+    // Update selection status in distance options
+    for (var option in distanceOptions) {
+      option['isSelected'] = option['value'] == distance;
+    }
+    distanceOptions.refresh();
+
+    // Refresh data
+    refreshBrands();
+  }
+
+  /// Reset distance filter
+  void resetDistanceFilter() {
+    updateDistanceFilter(0);
   }
 }

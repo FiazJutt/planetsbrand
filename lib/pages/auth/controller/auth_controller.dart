@@ -6,6 +6,8 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:planetbrand/pages/auth/login_screen.dart';
+import 'package:planetbrand/pages/auth/otp_screen.dart';
+import 'package:planetbrand/pages/auth/reset_password_screen.dart';
 import 'package:planetbrand/pages/landing/landing_screen.dart';
 import 'package:planetbrand/utils/api_helper.dart';
 import 'package:planetbrand/utils/app_helpers.dart';
@@ -18,12 +20,15 @@ class AuthController extends GetxController {
   TextEditingController passwordController = TextEditingController(text: "");
   TextEditingController confPasswordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
+  TextEditingController otpController = TextEditingController(); // New OTP controller
 
   // State Management
   RxBool showPassword = true.obs;
   RxBool showConfPassword = true.obs;
   RxBool checkTermsCondition = false.obs;
   RxBool loader = false.obs;
+  RxInt countdown = 30.obs; // For resend OTP countdown
+  RxBool canResendOtp = false.obs; // To control resend OTP button
 
   // Google SignIn
   final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -44,6 +49,7 @@ class AuthController extends GetxController {
     } else {
       try {
         loader(true);
+        /// old
         final response = await ApiHelper.postRequest(registerEndPoint, {
           "name": nameController.text.trim(),
           'email': emailController.text.trim(),
@@ -55,13 +61,98 @@ class AuthController extends GetxController {
         if (responseData['status_code'] == 200) {
           nameController.clear();
           confPasswordController.clear();
+          // Get.to(() => OtpScreen());
           Get.to(() => LoginScreen());
           successSnackBar(message: responseData['message']);
         } else {
           errorSnackBar(message: responseData['message']);
         }
+        // TODO temp commented code
+        // // First, send OTP to the user's email
+        // final otpResponse = await ApiHelper.postRequest(customerSendOtpSignUpEndPoint, {
+        //   "name": nameController.text.trim(),
+        //   'email': emailController.text.trim(),
+        //   "password": passwordController.text.trim(),
+        //   "c_password": passwordController.text.trim(),
+        // });
+        //
+        // final otpResponseData = jsonDecode(otpResponse.body);
+        // if (otpResponseData['status_code'] == 200) {
+        //   // Start countdown for resend OTP
+        //   startOtpCountdown();
+        //   successSnackBar(message: otpResponseData['message']);
+        //   // Navigate to OTP screen for verification
+        //   Get.to(() => OtpScreen());
+        // } else {
+        //   errorSnackBar(message: otpResponseData['message']);
+        // }
       } catch (e) {
         log("SignUp Error: $e");
+      } finally {
+        loader(false);
+      }
+    }
+  }
+
+  // Verify OTP for Signup
+  Future<void> verifyOtpAndSignUp() async {
+    if (otpController.text.isEmpty) {
+      errorSnackBar(message: "Please Enter OTP");
+    } else if (otpController.text.length < 6) {
+      errorSnackBar(message: "Please Enter a valid 6-digit OTP");
+    } else {
+      try {
+        loader(true);
+        Get.to(() => LoginScreen());
+        // TODO temp commented code
+        // // Verify OTP and complete registration
+        // final response = await ApiHelper.postRequest(registerEndPoint, {
+        //   "name": nameController.text.trim(),
+        //   'email': emailController.text.trim(),
+        //   "password": passwordController.text.trim(),
+        //   "c_password": passwordController.text.trim(),
+        //   'otp': otpController.text.trim(),
+        // });
+        //
+        // final responseData = jsonDecode(response.body);
+        // if (responseData['status_code'] == 200) {
+        //   nameController.clear();
+        //   confPasswordController.clear();
+        //   otpController.clear();
+        //   Get.offAll(() => LoginScreen());
+        //   successSnackBar(message: responseData['message']);
+        // } else {
+        //   errorSnackBar(message: responseData['message']);
+        // }
+      } catch (e) {
+        log("OTP Verification Error: $e");
+      } finally {
+        loader(false);
+      }
+    }
+  }
+
+  // Resend OTP for Signup
+  Future<void> resendOtpSignUp() async {
+    if (emailController.text.isEmpty) {
+      errorSnackBar(message: "Email is required");
+    } else {
+      try {
+        loader(true);
+        // TODO temp commented code
+        // final response = await ApiHelper.postRequest(customerSendOtpSignUpEndPoint, {
+        //   'email': emailController.text.trim(),
+        // });
+        //
+        // final responseData = jsonDecode(response.body);
+        // if (responseData['status_code'] == 200) {
+        //   startOtpCountdown();
+        //   successSnackBar(message: responseData['message']);
+        // } else {
+        //   errorSnackBar(message: responseData['message']);
+        // }
+      } catch (e) {
+        log("Resend OTP Error: $e");
       } finally {
         loader(false);
       }
@@ -131,6 +222,21 @@ class AuthController extends GetxController {
         loader(false);
       }
     }
+  }
+
+  // Start OTP countdown
+  void startOtpCountdown() {
+    countdown.value = 30;
+    canResendOtp.value = false;
+    
+    Future.delayed(const Duration(seconds: 1), () {
+      if (countdown.value > 0) {
+        countdown.value--;
+        startOtpCountdown();
+      } else {
+        canResendOtp.value = true;
+      }
+    });
   }
 
   // Google Login
