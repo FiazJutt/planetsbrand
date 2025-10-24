@@ -7,6 +7,7 @@ import 'package:planetbrand/components/common_text_filed.dart';
 import 'package:planetbrand/components/simple_app_bar.dart';
 import 'package:planetbrand/pages/auth/controller/auth_controller.dart';
 import 'package:planetbrand/pages/auth/login_screen.dart';
+import 'package:planetbrand/pages/auth/otp_screen.dart';
 import 'package:planetbrand/utils/app_colors.dart';
 import 'package:planetbrand/utils/app_helpers.dart';
 
@@ -48,7 +49,10 @@ class ForgotPasswrdScreen extends StatelessWidget {
                     : CommonButton(
                       titleName: "CHANGE",
                       onPressed: () {
-                        authController.forgotPassword();
+                        /// Temp
+                        authController.startOtpCountdown();
+                        Get.off(() => OtpScreen());
+                        // authController.forgotPassword();
                       },
                     );
               }),
