@@ -75,9 +75,13 @@ class GroceryStallsScreen extends StatelessWidget {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: 0.85,
-                          crossAxisSpacing: 16,
+                          // childAspectRatio: 0.85,
+                          // crossAxisSpacing: 16,
+                          // mainAxisSpacing: 16,
+                          // crossAxisCount: 3,
                           mainAxisSpacing: 16,
+                          crossAxisSpacing: 10,
+                          mainAxisExtent: 180,
                         ),
                     itemCount:
                         controller.filteredStallsList.length +
@@ -148,7 +152,7 @@ class GroceryStallsScreen extends StatelessWidget {
                             children: [
                               /// Stall Image
                               Expanded(
-                                flex: 3,
+                                flex: 2,
                                 child: Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(

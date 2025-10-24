@@ -75,9 +75,12 @@ class GroceryMallsScreen extends StatelessWidget {
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            childAspectRatio: 0.85,
+                            // childAspectRatio: 0.85,
+                            // crossAxisSpacing: 16,
+                            // mainAxisSpacing: 16,
                             crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
+                            mainAxisSpacing: 10,
+                            mainAxisExtent: 170,
                           ),
                       itemCount:
                           controller.filteredMallsList.length +

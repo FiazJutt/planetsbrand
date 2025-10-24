@@ -67,12 +67,17 @@ class GroceryController extends GetxController {
       // );
       // Add distance parameter to the API call if a distance is selected
       String apiUrl = '$groceryShopsEndPoints?page=${currentPage.value}';
+
+      // String apiUrl = '$groceryShopsEndPoints?page=${currentPage.value}';
       if (selectedDistance.value > 0) {
         apiUrl += '&distance=${selectedDistance.value}';
       }
       final response = await ApiHelper.getRequestWithToken(apiUrl);
 
       final responseData = jsonDecode(response.body);
+
+      print('\n\n\n\n\n\n\nStalls API Response Data: $responseData\n\n\n\n\n\n\n\n\n');
+
 
       if (responseData['status_code'] == 200) {
         final stallModel = GroceryStallsModel.fromJson(responseData);
@@ -130,6 +135,7 @@ class GroceryController extends GetxController {
       print(
         'Malls API Response Data Length: ${responseData['data']?.length ?? 0}',
       );
+      print('\n\n\n\n\n\n\nMalls API Response Data: $responseData\n\n\n\n\n\n\n\n\n');
 
       if (responseData['status_code'] == 200) {
         final mallModel = GroceryMallsModel.fromJson(responseData);
