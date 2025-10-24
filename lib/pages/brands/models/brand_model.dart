@@ -2,8 +2,20 @@ class BrandModel {
   int? statusCode;
   int? status;
   List<Brands>? brands;
+  int? currentPage;
+  int? lastPage;
+  int? total;
+  int? perPage;
 
-  BrandModel({this.statusCode, this.status, this.brands});
+  BrandModel({
+    this.statusCode,
+    this.status,
+    this.brands,
+    this.currentPage,
+    this.lastPage,
+    this.total,
+    this.perPage,
+  });
 
   BrandModel.fromJson(Map<String, dynamic> json) {
     statusCode = json['status_code'];
@@ -14,6 +26,10 @@ class BrandModel {
         brands!.add(Brands.fromJson(v));
       });
     }
+    currentPage = json['current_page'];
+    lastPage = json['last_page'];
+    total = json['total'];
+    perPage = json['per_page'];
   }
 
   Map<String, dynamic> toJson() {
@@ -23,6 +39,10 @@ class BrandModel {
     if (brands != null) {
       data['brands'] = brands!.map((v) => v.toJson()).toList();
     }
+    data['current_page'] = currentPage;
+    data['last_page'] = lastPage;
+    data['total'] = total;
+    data['per_page'] = perPage;
     return data;
   }
 }

@@ -22,6 +22,7 @@ import 'package:planetbrand/pages/product_details/product_detail_screen.dart';
 import 'package:planetbrand/pages/search/controller/search_controller.dart';
 import 'package:planetbrand/pages/search/search_product_screen.dart';
 import 'package:planetbrand/pages/search/search_shop_screen.dart';
+import 'package:planetbrand/pages/search/unified_search_screen.dart';
 import 'package:planetbrand/pages/shop/shop_detail_screen.dart';
 import 'package:planetbrand/pages/shop/shop_page.dart';
 import 'package:planetbrand/utils/app_assets.dart';
@@ -51,7 +52,8 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: HeroIcon(HeroIcons.magnifyingGlass),
             onPressed: () {
-              Get.to(() => SearchProductScreen());
+              Get.to(() => UnifiedSearchScreen());
+              // Get.to(() => SearchProductScreen());
             },
           ),
 
